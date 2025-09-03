@@ -1,0 +1,67 @@
+// Basic interactive behaviors: mobile nav toggle and contact form handler.
+
+// Mobile nav toggle
+const navToggle = document.getElementById('nav-toggle');
+const primaryNav = document.getElementById('primary-nav');
+
+navToggle && navToggle.addEventListener('click', () => {
+  const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+  navToggle.setAttribute('aria-expanded', String(!expanded));
+  primaryNav.classList.toggle('show');
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    // allow external behavior for '#' or javascript links
+    if (!href || href.length === 1) return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // close mobile nav when clicking a link
+      if (primaryNav.classList.contains('show')) {
+        primaryNav.classList.remove('show');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+  });
+});
+
+// Contact form demo: client-side validation and feedback (no server)
+const form = document.getElementById('contact-form');
+const status = document.getElementById('form-status');
+const resetBtn = document.getElementById('reset-btn');
+
+if (form) {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const message = form.message.value.trim();
+
+    if (!name || !email || !message) {
+      status.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    // simple email validation
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email)) {
+      status.textContent = 'Please provide a valid email address.';
+      return;
+    }
+
+    // Simulate success (for demo): clear and show message
+    status.textContent = 'Thanks, your message was received (demo).';
+    form.reset();
+
+    // You can integrate real sending logic here (fetch to an API)
+  });
+
+  resetBtn && resetBtn.addEventListener('click', () => {
+    form.reset();
+    status.textContent = '';
+  });
+}
